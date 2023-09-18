@@ -1,60 +1,124 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace MyClient.Domain;
 
-public class MyUser
+[DataContract]
+public class User
 {
-    public string id { get; set; }
-    //public string create_at { get; set; }
-    /*
-    public string update_at { get; set; }
-    public string delete_at { get; set; }
-    public string username { get; set; }
-    public string auth_data { get; set; }
-    public string auth_service { get; set; }
-    public string email { get; set; }
-    public string nickname { get; set; }
-    public string first_name { get; set; }
-    public string last_name { get; set; }
-    public string position { get; set; }
-    public string roles { get; set; }
-    public Props props { get; set; }
-    public Notify_Props notify_props { get; set; }
-    public long last_password_update { get; set; }
-    public string locale { get; set; }
-    public Timezone timezone { get; set; }
-    public bool disable_welcome_email { get; set; }
-    */
+    [DataMember(Name = "id")]
+    public string Id { get; set; }
+
+    [DataMember(Name = "create_at")]
+    public long CreateAt { get; set; }
+
+    [DataMember(Name = "update_at")]
+    public long UpdateAt { get; set; }
+
+    [DataMember(Name = "delete_at")]
+    public long DeleteAt { get; set; }
+
+    [DataMember(Name = "username")]
+    public string Username { get; set; }
+
+    [DataMember(Name = "auth_data")]
+    public string AuthData { get; set; }
+
+    [DataMember(Name = "auth_service")]
+    public string AuthService { get; set; }
+
+    [DataMember(Name = "email")]
+    public string Email { get; set; }
+
+    [DataMember(Name = "nickname")]
+    public string Nickname { get; set; }
+
+    [DataMember(Name = "first_name")]
+    public string FirstName { get; set; }
+
+    [DataMember(Name = "last_name")]
+    public string LastName { get; set; }
+
+    [DataMember(Name = "position")]
+    public string Position { get; set; }
+
+    [DataMember(Name = "roles")]
+    public string Roles { get; set; }
+
+    [DataMember(Name = "props")]
+    public Props Props { get; set; }
+
+    [DataMember(Name = "notify_props")]
+    public NotifyProps NotifyProps { get; set; }
+
+    [DataMember(Name = "last_password_update")]
+    public long LastPasswordUpdate { get; set; }
+
+    [DataMember(Name = "locale")]
+    public string Locale { get; set; }
+
+    [DataMember(Name = "timezone")]
+    public Timezone Timezone { get; set; }
+
+    [DataMember(Name = "disable_welcome_email")]
+    public bool DisableWelcomeEmail { get; set; }
 }
 
+[DataContract]
 public class Props
 {
-    public string last_search_pointer { get; set; }
+    [DataMember(Name = "last_search_pointer")]
+    public string LastSearchPointer { get; set; }
 }
 
-public class Notify_Props
+[DataContract]
+public class NotifyProps
 {
-    public string channel { get; set; }
-    public string comments { get; set; }
-    public string desktop { get; set; }
-    public string desktop_sound { get; set; }
-    public string desktop_threads { get; set; }
-    public string email { get; set; }
-    public string email_threads { get; set; }
-    public string first_name { get; set; }
-    public string mention_keys { get; set; }
-    public string push { get; set; }
-    public string push_status { get; set; }
-    public string push_threads { get; set; }
+    [DataMember(Name = "channel")]
+    public string Channel { get; set; }
+
+    [DataMember(Name = "comments")]
+    public string Comments { get; set; }
+
+    [DataMember(Name = "desktop")]
+    public string Desktop { get; set; }
+
+    [DataMember(Name = "desktop_sound")]
+    public string DesktopSound { get; set; }
+
+    [DataMember(Name = "desktop_threads")]
+    public string DesktopThreads { get; set; }
+
+    [DataMember(Name = "email")]
+    public string Email { get; set; }
+
+    [DataMember(Name = "email_threads")]
+    public string EmailThreads { get; set; }
+
+    [DataMember(Name = "first_name")]
+    public string FirstName { get; set; }
+
+    [DataMember(Name = "mention_keys")]
+    public string MentionKeys { get; set; }
+
+    [DataMember(Name = "push")]
+    public string Push { get; set; }
+
+    [DataMember(Name = "push_status")]
+    public string PushStatus { get; set; }
+
+    [DataMember(Name = "push_threads")]
+    public string PushThreads { get; set; }
 }
 
+[DataContract]
 public class Timezone
 {
-    public string automaticTimezone { get; set; }
-    public string manualTimezone { get; set; }
-    public string useAutomaticTimezone { get; set; }
+    [DataMember(Name = "automatic_timezone")]
+    public string AutomaticTimezone { get; set; }
+
+    [DataMember(Name = "manual_timezone")]
+    public string ManualTimezone { get; set; }
+
+    [DataMember(Name = "use_automatic_timezone")]
+    public string UseAutomaticTimezone { get; set; }
 }
