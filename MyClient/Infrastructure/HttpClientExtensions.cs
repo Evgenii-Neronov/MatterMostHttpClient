@@ -4,7 +4,6 @@ using System.Text;
 namespace MyClient.Infrastructure;
 public static class HttpClientExtensions
 {
-
     public static async Task<TResponse> GetAsync<TResponse>(this HttpClient httpClient, string url, CancellationToken cancellationToken = default)
     {
         using var response = await httpClient.GetAsync(url, cancellationToken);
@@ -30,4 +29,16 @@ public static class HttpClientExtensions
         return JsonConvert.DeserializeObject<TResponse>(responseJson);
     }
 
+    public static async Task<TResponse> PostFileAsync<TResponse>(this HttpClient httpClient, string url, Stream fileStream, string fileName, string channelId, CancellationToken cancellationToken = default)
+    {
+        using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(fileStream), "files", fileName);
+        content.Add(new StringContent(channelId), "channel_id");
+
+        using var response = await httpClient.PostAsync(url, content, cancellationToken);
+
+        var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        return JsonConvert.DeserializeObject<TResponse>(responseJson);
+    }
 }
