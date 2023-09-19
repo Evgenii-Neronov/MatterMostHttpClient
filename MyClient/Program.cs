@@ -9,7 +9,7 @@ var matterMostHttpClient = new MatterMostHttpClient(new HttpClient(), "http://ho
 await matterMostHttpClient.Login(Login, Password, ct);
 var channel = await matterMostHttpClient.GetChannelByNameAsync("off-topic", ct);
 
-if(channel != null)
+if (channel != null)
 {
     await matterMostHttpClient.PostMessageAsync(channel.Id, "This is my test 12345 !", ct);
 }

@@ -1,6 +1,4 @@
 ﻿using MyClient.Domain;
-using Newtonsoft.Json;
-using System.Text;
 
 namespace MyClient.Infrastructure.MattermostHttpClient.Implementation;
 
@@ -46,8 +44,8 @@ internal class MatterMostHttpClient : IMatterMostClient
     public async Task<List<Team>> GetTeamsAsync(CancellationToken ct)
     {
         _httpClient.DefaultRequestHeaders.Clear();
-         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
-        
+        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
+
         var apiUrl = BuildApiUrl("api/v4/users/me/teams");
 
         var teams = await _httpClient.GetAsync<List<Team>>(apiUrl, ct);
