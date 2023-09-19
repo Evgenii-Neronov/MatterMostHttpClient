@@ -97,6 +97,32 @@ internal class MatterMostHttpClient : IMatterMostClient
         return await _httpClient.PostAsync<object, Post>(apiUrl, data, ct);
     }
 
+    public async Task<string[]> UploadFileAsync(Stream fileStream, string fileName, string channelId, CancellationToken ct)
+    {
+        var apiUrl = BuildApiUrl($"api/v4/files");
+
+        var response = await _httpClient.PostFileAsync<FileInfos>(apiUrl, fileName, fileStream, new { channel_id = channelId }, ct);
+        return response.FIs.Select(fi => fi.Id).ToArray();
+    }
+
+
+    public async Task<Post> PostMessageWithFilesAsync(string channelId, string messageText, string[] fileIds, CancellationToken ct)
+    {
+        _httpClient.DefaultRequestHeaders.Clear();
+        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
+
+        var data = new
+        {
+            channel_id = channelId,
+            message = messageText,
+            file_ids = fileIds
+        };
+
+        var apiUrl = "http://host.docker.internal:8065/api/v4/posts";
+
+        return await _httpClient.PostAsync<object, Post>(apiUrl, data, ct);
+    }
+
     private string BuildApiUrl(string apiEndpoint)
     {
         return $"{_baseUrl}/{apiEndpoint}";

@@ -54,11 +54,17 @@ public static class HttpClientExtensions
         };
     }
 
-    public static async Task<TResponse> PostFileAsync<TResponse>(this HttpClient httpClient, string url, Stream fileStream, string fileName, string channelId, CancellationToken cancellationToken = default)
+    public static async Task<TResponse> PostFileAsync<TResponse>(this HttpClient httpClient, string url, string fileName, Stream fileStream, object fields, CancellationToken cancellationToken = default)
     {
         using var content = new MultipartFormDataContent();
+
         content.Add(new StreamContent(fileStream), "files", fileName);
-        content.Add(new StringContent(channelId), "channel_id");
+
+        foreach (var prop in fields.GetType().GetProperties())
+        {
+            var value = prop.GetValue(fields);
+            content.Add(new StringContent(value.ToString()), prop.Name);
+        }
 
         using var response = await httpClient.PostAsync(url, content, cancellationToken);
 
