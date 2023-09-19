@@ -33,7 +33,7 @@ internal class MatterMostHttpClient : IMatterMostClient
 
         var response = await httpClient.PostWithResponseAsync<object, User>(apiUrl, data, cancellationToken);
 
-        _token = response.HttpResponseMessage.Headers.GetValues("Token").FirstOrDefault();
+        _token = response.GetHeader("Token");
         _userId = response.ResponseObject.Id;
 
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
@@ -118,7 +118,44 @@ internal class MatterMostHttpClient : IMatterMostClient
             file_ids = fileIds
         };
 
-        var apiUrl = "http://host.docker.internal:8065/api/v4/posts";
+        var apiUrl = BuildApiUrl($"api/v4/posts");
+
+        return await _httpClient.PostAsync<object, Post>(apiUrl, data, ct);
+    }
+
+    public async Task<Post> PostMessageWithButtonsAsync(string channelId, string messageText, string preText, List<Button> buttons, CancellationToken ct)
+    {
+        _httpClient.DefaultRequestHeaders.Clear();
+        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
+
+        var actions = buttons.Select(button => new
+        {
+            name = button.Name,
+            integration = new
+            {
+                url = button.Url,
+                context = button.Context
+            }
+        }).ToArray();
+
+        var data = new
+        {
+            channel_id = channelId,
+            message = messageText,
+            props = new
+            {
+                attachments = new[]
+                {
+                new
+                {
+                    pretext = preText,
+                    actions = actions
+                }
+            }
+            }
+        };
+
+        var apiUrl = BuildApiUrl($"api/v4/posts");
 
         return await _httpClient.PostAsync<object, Post>(apiUrl, data, ct);
     }

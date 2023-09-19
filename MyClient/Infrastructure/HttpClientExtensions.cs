@@ -72,4 +72,7 @@ public static class HttpClientExtensions
 
         return JsonConvert.DeserializeObject<TResponse>(responseJson);
     }
+
+    public static string GetHeader<T>(this HttpResponse<T> response, string header)
+        => response.HttpResponseMessage.Headers.GetValues(header)?.FirstOrDefault() ?? string.Empty;
 }
