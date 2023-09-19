@@ -7,10 +7,12 @@ namespace MyClient.Infrastructure.MattermostHttpClient.Implementation;
 internal class MatterMostHttpClient : IMatterMostClient
 {
     private readonly HttpClient _httpClient;
+    private readonly string _baseUrl;
 
-    public MatterMostHttpClient(HttpClient httpClient)
+    public MatterMostHttpClient(HttpClient httpClient, string baseUrl)
     {
-        _httpClient=httpClient;
+        _httpClient = httpClient;
+        _baseUrl = baseUrl;
     }
 
     public HttpClient HttpClient => _httpClient;
@@ -18,10 +20,12 @@ internal class MatterMostHttpClient : IMatterMostClient
     public string _token = string.Empty;
     public string _userId = string.Empty;
 
-    public async Task<User> Login(string username, string password, CancellationToken ct)
+    public async Task<User> Login(string username, string password, CancellationToken cancellationToken)
     {
+
         var httpClient = new HttpClient();
-        var apiUrl = "http://host.docker.internal:8065/api/v4/users/login";
+
+        var apiUrl = BuildApiUrl("api/v4/users/login");
 
         var data = new
         {
@@ -29,27 +33,21 @@ internal class MatterMostHttpClient : IMatterMostClient
             password = password
         };
 
-        var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+        var response = await httpClient.PostWithResponseAsync<object, User>(apiUrl, data, cancellationToken);
 
-        var response = await httpClient.PostAsync(apiUrl, content, ct);
-        var responseBody = await response.Content.ReadAsStringAsync();
-
-        var user = JsonConvert.DeserializeObject<User>(responseBody);
-
-        _token = response.Headers?.GetValues("Token")?.FirstOrDefault();
-        _userId = user.Id;
+        _token = response.HttpResponseMessage.Headers.GetValues("Token").FirstOrDefault();
 
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
 
-        return user;
+        return response.ResponseObject;
     }
 
     public async Task<List<Team>> GetTeamsAsync(CancellationToken ct)
     {
         _httpClient.DefaultRequestHeaders.Clear();
          _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
-
-        var apiUrl = "http://host.docker.internal:8065/api/v4/users/me/teams";
+        
+        var apiUrl = BuildApiUrl("/api/v4/users/me/teams");
 
         var teams = await _httpClient.GetAsync<List<Team>>(apiUrl, ct);
 
@@ -61,9 +59,9 @@ internal class MatterMostHttpClient : IMatterMostClient
         _httpClient.DefaultRequestHeaders.Clear();
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
 
-        var channelsApiUrl = $"http://host.docker.internal:8065/api/v4/users/{_userId}/teams/{teamId}/channels";
+        var apiUrl = BuildApiUrl($"api/v4/users/{_userId}/teams/{teamId}/channels");
 
-        var channels = await _httpClient.GetAsync<List<Channel>>(channelsApiUrl, ct);
+        var channels = await _httpClient.GetAsync<List<Channel>>(apiUrl, ct);
 
         return channels;
     }
@@ -95,8 +93,13 @@ internal class MatterMostHttpClient : IMatterMostClient
             message = messageText
         };
 
-        var apiUrl = "http://host.docker.internal:8065/api/v4/posts";
+        var apiUrl = BuildApiUrl($"api/v4/posts");
 
         return await _httpClient.PostAsync<object, Post>(apiUrl, data, ct);
+    }
+
+    private string BuildApiUrl(string apiEndpoint)
+    {
+        return $"{_baseUrl}/{apiEndpoint}";
     }
 }
