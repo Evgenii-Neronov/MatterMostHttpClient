@@ -36,6 +36,7 @@ internal class MatterMostHttpClient : IMatterMostClient
         var response = await httpClient.PostWithResponseAsync<object, User>(apiUrl, data, cancellationToken);
 
         _token = response.HttpResponseMessage.Headers.GetValues("Token").FirstOrDefault();
+        _userId = response.ResponseObject.Id;
 
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
 
@@ -47,7 +48,7 @@ internal class MatterMostHttpClient : IMatterMostClient
         _httpClient.DefaultRequestHeaders.Clear();
          _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
         
-        var apiUrl = BuildApiUrl("/api/v4/users/me/teams");
+        var apiUrl = BuildApiUrl("api/v4/users/me/teams");
 
         var teams = await _httpClient.GetAsync<List<Team>>(apiUrl, ct);
 
